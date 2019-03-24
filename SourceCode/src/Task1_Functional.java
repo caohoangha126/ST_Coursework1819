@@ -1,9 +1,6 @@
 import static org.junit.Assert.*;
-
 import org.junit.Test;
-
 import st.Parser;
-
 import org.junit.Before;
 import static org.junit.Assert.assertEquals;
 
@@ -30,6 +27,7 @@ public class Task1_Functional {
 		parser.add("val", "v", Parser.STRING);
 		parser.add("val", "v", Parser.BOOLEAN);
 		parser.parse("--val 1");	
+		// Type STRING should be changed to type BOOLEAN
 		assertEquals(true, parser.getBoolean("val"));
 	}
 	
@@ -40,8 +38,8 @@ public class Task1_Functional {
 	
 	// A valid name should pass
 	@Test 
-	public void testValidNameWithShortcute() {
-		parser.add("valid_name", "vn", Parser.STRING);
+	public void testValidNameWithShortcut() {
+		parser.add("valid_name_123", "vn", Parser.STRING);
 	}
 	
 	// Should only contain numbers, alphabets, and underscores for name
@@ -59,7 +57,7 @@ public class Task1_Functional {
 	// Number can't be first character for name
 	@Test (expected = RuntimeException.class)
 	public void testNumberNotFirstCharForNameWithShortcut() {
-		parser.add("1a", "a1", Parser.STRING);
+		parser.add("1a", "a", Parser.STRING);
 	}
 	
 	// Number can't be first character for shortcut
@@ -118,14 +116,21 @@ public class Task1_Functional {
 		assertEquals(true, parser.getBoolean("val1"));
 	}
 	
-	// Assigned to true by giving true
-	public void testBooleanAssignedTrueGivenTrueWithShortcut() {
+	// Assigned to true by giving lowercase true
+	public void testBooleanAssignedLowerCaseTrueGivenTrueWithShortcut() {
 		parser.add("val1", "v1", Parser.BOOLEAN);
 		parser.parse("--val1 true");
 		assertEquals(true, parser.getBoolean("val1"));
 	}
 	
-	// Assigned to false by not parsing anything
+	// Assigned to true by giving uppercase true
+	public void testBooleanAssignedUpperCasesTrueGivenTrueWithShortcut() {
+		parser.add("val1", "v1", Parser.BOOLEAN);
+		parser.parse("--val1 True");
+		assertEquals(true, parser.getBoolean("val1"));
+	}
+	
+	// Assigned to false by not parsing anything (not using this option in entire string)
 	@Test
 	public void testBooleanAssignedFalseWithShortcut() {
 		parser.add("val2", "v2", Parser.BOOLEAN);
@@ -139,10 +144,18 @@ public class Task1_Functional {
 		parser.parse("--val2 0");
 		assertEquals(false, parser.getBoolean("val2"));
 	}
-
-	// Assigned to false by giving false
+	
+	// Assigned to false by giving lowercase false
 	@Test
-	public void testBooleanAssignedGivenFalseWithShortcut() {
+	public void testBooleanAssignedGivenLowerCaseFalseWithShortcut() {
+		parser.add("val2", "v2", Parser.BOOLEAN);
+		parser.parse("--val2 false");
+		assertEquals(false, parser.getBoolean("val2"));
+	}
+
+	// Assigned to false by giving uppercase false
+	@Test
+	public void testBooleanAssignedGivenUpperCaseFalseWithShortcut() {
 		parser.add("val2", "v2", Parser.BOOLEAN);
 		parser.parse("--val2 False");
 		assertEquals(false, parser.getBoolean("val2"));
@@ -173,7 +186,7 @@ public class Task1_Functional {
 	
 	// A valid name should pass
 	@Test 
-	public void testValidNameWithoutShortcute() {
+	public void testValidNameWithoutShortcut() {
 		parser.add("valid_name", Parser.STRING);
 	}
 	
@@ -228,10 +241,17 @@ public class Task1_Functional {
 		assertEquals(true, parser.getBoolean("val1"));
 	}
 	
-	// Assigned to true by giving true
-	public void testBooleanAssignedTrueGivenTrueWithoutShortcut() {
+	// Assigned to true by giving lowercase true
+	public void testBooleanAssignedTrueGivenLowercaseTrueWithoutShortcut() {
 		parser.add("val1", Parser.BOOLEAN);
 		parser.parse("--val1 true");
+		assertEquals(true, parser.getBoolean("val1"));
+	}
+	
+	// Assigned to true by giving uppercase true
+	public void testBooleanAssignedTrueGivenUppercaseTrueWithoutShortcut() {
+		parser.add("val1", Parser.BOOLEAN);
+		parser.parse("--val1 True");
 		assertEquals(true, parser.getBoolean("val1"));
 	}
 	
@@ -250,9 +270,17 @@ public class Task1_Functional {
 		assertEquals(false, parser.getBoolean("val2"));
 	}
 
-	// Assigned to false by giving false
+	// Assigned to false by giving lowercase false
 	@Test
-	public void testBooleanAssignedGivenFalseWithoutShortcut() {
+	public void testBooleanAssignedGivenLowerCaseFalseWithoutShortcut() {
+		parser.add("val2", Parser.BOOLEAN);
+		parser.parse("--val2 false");
+		assertEquals(false, parser.getBoolean("val2"));
+	}
+	
+	// Assigned to false by giving uppercase false
+	@Test
+	public void testBooleanAssignedGivenUpperCaseFalseWithoutShortcut() {
 		parser.add("val2", Parser.BOOLEAN);
 		parser.parse("--val2 False");
 		assertEquals(false, parser.getBoolean("val2"));
@@ -337,8 +365,40 @@ public class Task1_Functional {
 	 * Task 1 Specification 5.6
 	 * If assign multiple times, value of option is from last assignment
 	 */
+	
+	// For char
 	@Test
-	public void testMultipleAssignments() {
+	public void testMultipleAssignmentsInteger() {
+		parser.add("val", Parser.INTEGER);
+		parser.parse("--val 1");
+		parser.parse("--val 2");
+		parser.parse("--val 3");
+		assertEquals(3, parser.getInteger("val"));
+	}
+	
+	// For boolean
+	@Test
+	public void testMultipleAssignmentsBoolean() {
+		parser.add("val", Parser.BOOLEAN);
+		parser.parse("--val 1");
+		parser.parse("--val 0");
+		parser.parse("--val 1");
+		assertEquals(true, parser.getBoolean("val"));
+	}
+	
+	// For string
+	@Test
+	public void testMultipleAssignmentsString() {
+		parser.add("val", Parser.STRING);
+		parser.parse("--val abc");
+		parser.parse("--val xyz");
+		parser.parse("--val mno");
+		assertEquals("mno", parser.getString("val"));
+	}
+	
+	// For char
+	@Test
+	public void testMultipleAssignmentsChar() {
 		parser.add("val", Parser.CHAR);
 		parser.parse("--val a");
 		parser.parse("--val b");
