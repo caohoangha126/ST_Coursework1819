@@ -661,5 +661,36 @@ private OptionMap optionMap;
 		parser.add("val", "v", Parser.BOOLEAN);
 		parser.parse("-v");
 		assertEquals(true, parser.getBoolean("v"));
+	}
+	
+	/*
+	 * Test parse() with hasSpace == true 
+	 */
+	@Test
+	public void testParseWithHasSpaceEqualTrue() {
+		parser.add("val", Parser.INTEGER);
+		int returnResult = parser.parse("--val -");
+		assertEquals(-3, returnResult);
+	}
+	
+	/*
+	 * Test parse() with hasSpace == true 
+	 * and char_index < length
+	 */
+	@Test
+	public void testParseWithHasSpaceEqualTrueWithCharIndexLessThanLength() {
+		parser.add("val", Parser.BOOLEAN);
+		parser.parse("--val ");
+		assertEquals(true, parser.getBoolean("val"));
 	}	
+	
+	/*
+	 * Test parse() with char_index >= length
+	 */	
+	@Test
+	public void testParseWithCharIndexNoLessThanLength() {
+		parser.add("val", Parser.BOOLEAN);
+		parser.parse("--val - ");
+		assertEquals(true, parser.getBoolean("val"));
+	}
 } 
