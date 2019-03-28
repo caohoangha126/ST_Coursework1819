@@ -54,6 +54,7 @@ public class Task3_TDD_N {
 		parser.add("list",  "l", Parser.STRING);
 		parser.parse("--list=1,2,3,4,5");
 		List l = parser.getIntegerList("list");	
+		System.out.println(testList);
 		assertEquals(testList, l);
 	}
 	
@@ -67,7 +68,6 @@ public class Task3_TDD_N {
 		parser.add("list",  "l", Parser.STRING);
 		parser.parse("--list=1 2 3 4 5");
 		List l = parser.getIntegerList("list");	
-		System.out.println("l="+l);
 		assertEquals(testList, l);
 	}
 	
@@ -105,7 +105,7 @@ public class Task3_TDD_N {
 			testList.add(Integer.valueOf(i));
 		}
 		parser.add("list",  "l", Parser.STRING);
-		parser.parse("--list={}1(2)3/4\\5[|]");
+		parser.parse("--list={}1(2)3/4\5[|]");
 		List l = parser.getIntegerList("list");	
 		assertEquals(testList, l);
 	}
@@ -206,26 +206,14 @@ public class Task3_TDD_N {
 	 */
 	
 	@Test
-	public void inclusiveRangeBothWaysTest() {
+	public void inclusiveRangeTest() {
 		parser.add("list1",  "l1", Parser.STRING);
 		parser.parse("--list1=1-50");
-		List l1 = parser.getIntegerList("list1");	
+		List l1 = parser.getIntegerList("list");	
 		parser.add("list2",  "l2", Parser.STRING);
 		parser.parse("--list2=50-1");
-		List l2 = parser.getIntegerList("list2");
-		assertEquals(l1,l2);
-	}
-	
-	public void inclusiveRangeTest() {
-		int[] arr = {1,2,3,4,5,6,7,8,9,10};
-		List<Integer> testList = new ArrayList<Integer>(arr.length);
-		for (int i : arr) {
-			testList.add(Integer.valueOf(i));
-		}
-		parser.add("list1",  "l1", Parser.STRING);
-		parser.parse("--list1=1-10");
-		List l1 = parser.getIntegerList("list1");	
-		assertEquals(testList,l1);
+		List l2 = parser.getIntegerList("list");
+		assertTrue(l2 == l1);
 	}
 	
 	/**
@@ -233,11 +221,7 @@ public class Task3_TDD_N {
 	 */
 	@Test
 	public void allNegativeValuesDecreasingTest() {
-		int[] arr = {-5,-4,-3,-2,-1};
-		List<Integer> testList = new ArrayList<Integer>(arr.length);
-		for (int i : arr) {
-			testList.add(Integer.valueOf(i));
-		}
+		List<String> testList = Arrays.asList("-5", "-4", "-3", "-2","-1");
 		parser.add("list",  "l", Parser.STRING);
 		parser.parse("--list=-1--5");
 		List l = parser.getIntegerList("list");	
@@ -245,12 +229,8 @@ public class Task3_TDD_N {
 	}
 	
 	@Test
-	public void positiveAndNegativeValuesTest() {
-		int[] arr = {-2,-1,0,1,2};
-		List<Integer> testList = new ArrayList<Integer>(arr.length);
-		for (int i : arr) {
-			testList.add(Integer.valueOf(i));
-		}
+	public void allNegativeValuesIncreasingTest() {
+		List<String> testList = Arrays.asList("-2", "-1", "0", "1","2");
 		parser.add("list",  "l", Parser.STRING);
 		parser.parse("--list=-2-2");
 		List l = parser.getIntegerList("list");
@@ -258,14 +238,10 @@ public class Task3_TDD_N {
 	}
 	
 	@Test
-	public void allNegativeValuesIncreasingTest() {
-		int[] arr = {-15, -14, -13, -12, -11, -10, -9, -8, -7, -6, -5, -4, -3, -2, -1};
-		List<Integer> testList = new ArrayList<Integer>(arr.length);
-		for (int i : arr) {
-			testList.add(Integer.valueOf(i));
-		}
+	public void positiveAndNegativeValuesTest() {
+		List<String> testList = Arrays.asList("-5", "-4", "-3", "-2","-1");
 		parser.add("list",  "l", Parser.STRING);
-		parser.parse("--list=-15--1");
+		parser.parse("--list=-5--1");
 		List l = parser.getIntegerList("list");	
 		assertEquals(testList, l);
 	}

@@ -1,6 +1,11 @@
 package st;
 
 import java.math.BigInteger;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.Scanner;
 
 public class Parser {
 	public static final int INTEGER = 1;
@@ -20,6 +25,65 @@ public class Parser {
 	
 	public void add(String option_name, int value_type) {
 		optionMap.store(option_name, "", value_type);
+	}
+
+	/*
+	 * Implementation of getIntegerList for Task 3
+	 */
+	public List<Integer> getIntegerList(String option) {
+		String value = getString(option);
+		String newValue = value.replaceAll("[^\\d-]", " ");
+		newValue = newValue.replace("\\", " ");
+		newValue = newValue.replace("+", " ");
+		newValue = newValue.replace("=", " ");
+		String after = newValue.trim().replaceAll(" +", " ");
+		List<String> strList = Arrays.asList(after.split("\\s+"));
+		System.out.println(strList);
+		List<Integer> result = new ArrayList<Integer>();
+		for (int i=0;i<strList.size(); i++) {
+			int max,min;
+			String temp = strList.get(i);
+			if (temp.endsWith("-")) {
+				result = Collections.emptyList();
+				return result;
+			}
+			if (temp.length()>2) {
+				if (temp.indexOf("-",0)==0) {
+					temp = temp.substring(1);
+					temp = temp.replaceFirst("-", " ");
+					temp = "-"+temp;
+				}
+				else if (temp.indexOf("-",1)!=0) {
+					temp = temp.replaceFirst("-", " ");
+				}
+				List<String> tempStrList = Arrays.asList(temp.split("\\s+"));
+				
+				List<Integer> tempList = new ArrayList<Integer>();
+				Scanner scanner = new Scanner(tempStrList.get(0));
+				tempList.add(scanner.nextInt());
+				scanner.close();
+				scanner = new Scanner(tempStrList.get(1));
+				tempList.add(scanner.nextInt());
+				scanner.close();
+				max = Collections.max(tempList);
+				min = Collections.min(tempList);
+				
+				result = new ArrayList<Integer>(max - min + 1);
+				
+				for(int j = min; j <= max; j++) {
+					result.add(j);
+				} 
+			}
+			else {
+				Scanner scanner = new Scanner(strList.get(i));
+				while (scanner.hasNextInt()) {
+					result.add(scanner.nextInt());
+				}
+				scanner.close();
+			}
+		}
+		System.out.println("result for"+result);
+		return result;
 	}
 
 	public int getInteger(String option) {
@@ -204,6 +268,6 @@ public class Parser {
 	public String toString() {
 		return optionMap.toString();
 	}
-
+	
 }
 
