@@ -224,7 +224,6 @@ public class Task3_TDD_1 {
 	public void testInvalidInput5() {
 		parser.add("list", "l", Parser.STRING);
 		parser.parse("-l=\'   4-7-9-12-15   \'");
-		System.out.println(parser.getIntegerList("l"));
 		assertTrue(parser.getIntegerList("l").isEmpty());
 	}
 	
@@ -263,10 +262,12 @@ public class Task3_TDD_1 {
 		for (int i = -100; i <= 200; i++) {
 			expected.add(i);
 		}
-		expected.add(-300);
+		for (int i = -50; i <= 30; i++) {
+			expected.add(i);
+		}
 		Collections.sort(expected);
 		parser.add("list", Parser.STRING);
-		parser.parse("--list=\'@#$200--100!!-300\'");
+		parser.parse("--list=\'   @#$200--100!!30--50  \'");
 		assertEquals(expected, parser.getIntegerList("list"));
 	}
 	
