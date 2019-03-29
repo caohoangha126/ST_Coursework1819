@@ -217,13 +217,14 @@ public class Parser {
 		if (getType(option) != STRING) return Arrays.asList();	
 		
 		ArrayList<Integer> list = new ArrayList<Integer>();
-		String value = getString(option);			
+		String value = getString(option);
 		int charIndex = 0;
 		int length = value.length();
 		boolean hasHyphen = false;
 		boolean potentialRange = false;
 		int oneEnd = 0;
 		boolean hasSeparator = false;
+		boolean firstNum = false;
 		
 		while(charIndex < length) {
 			// Skip the separator(s)
@@ -237,7 +238,7 @@ public class Parser {
 			}
 			
 			// If already hit the end of the string
-			if (charIndex == length) return Arrays.asList();		
+			if (charIndex == length) return list;
 			
 			// If hit a hyphen
 			if (value.charAt(charIndex) == '-') {
@@ -253,10 +254,12 @@ public class Parser {
 					// meaning the individual number has more than one digit
 					if (Character.isDigit(value.charAt(charIndex))) {
 						numString = numString + Character.toString(value.charAt(charIndex));
-						charIndex++;
+						charIndex++;						
 					} 
 					else break;
 				}
+				if (list.isEmpty()) firstNum = true;
+				else firstNum = false;
 				// Convert the string to a number and add it to the list 
 				list.add(Integer.valueOf(numString));
 				// It might be one end of a range
@@ -284,6 +287,8 @@ public class Parser {
 						} 
 						else break;
 					}
+					if (list.isEmpty()) firstNum = true;
+					else firstNum = false;
 					// Convert the string to a number  
 					int otherEnd = Integer.valueOf(numString); 
 					// If two ends are equal, invalid
@@ -323,12 +328,15 @@ public class Parser {
 						} 
 						else break;
 					}
+					if (list.isEmpty()) firstNum = true;
+					else firstNum = false;
 					// Convert the string to a number and add it to the list 
 					list.add(-Integer.valueOf(numString));
 					// It might be one end of a range
 					potentialRange = true;
-					oneEnd = -Integer.valueOf(numString); 					
+					oneEnd = -Integer.valueOf(numString); 
 					if (!hasSeparator && charIndex == length) return Arrays.asList();
+					if (!hasSeparator && !firstNum) return Arrays.asList();
 					hasSeparator = false;
 				}
 				// If hit the end of the string
@@ -355,6 +363,8 @@ public class Parser {
 							}
 							else break;
 						}
+						if (list.isEmpty()) firstNum = true;
+						else firstNum = false;
 						// Convert the string to a number  
 						int otherEnd = -Integer.valueOf(numString); 
 						// If two ends are equal, invalid
@@ -397,6 +407,8 @@ public class Parser {
 						}
 						if (charIndex == length) return Arrays.asList();
 						else { 
+							if (list.isEmpty()) firstNum = true;
+							else firstNum = false;
 							// Convert the string to a number and add it to the list 
 							list.add(-Integer.valueOf(numString));
 							// It might be one end of a range

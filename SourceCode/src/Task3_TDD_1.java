@@ -39,6 +39,12 @@ public class Task3_TDD_1 {
 		parser.add("o", Parser.STRING);
 		assertTrue(parser.getIntegerList("o").isEmpty());
 	}
+	
+	// Not defined at all
+	@Test
+	public void testOptionNotDefined() {
+		assertTrue(parser.getIntegerList("o").isEmpty());
+	}
 
 	/*
 	 * Specification 3
@@ -47,18 +53,18 @@ public class Task3_TDD_1 {
 	@Test
 	public void testNonNumberSeparator1() {
 		parser.add("list1", Parser.STRING);
-		parser.parse("--list=\"1,2 4\"");
+		parser.parse("--list1=\"1,2 4\"");
 		parser.add("list2", Parser.STRING);
-		parser.parse("--list=1,2.4");
+		parser.parse("--list2=1,2.4");
 		assertTrue(parser.getIntegerList("list1").equals(parser.getIntegerList("list2")));
 	}
 
 	@Test
 	public void testNonNumberSeparator2() {
 		parser.add("list1", Parser.STRING);
-		parser.parse("--list=\"1,2 4\"");
+		parser.parse("--list1=\"1,2 4\"");
 		parser.add("list2", Parser.STRING);
-		parser.parse("--list={}1<>2!!4({)");
+		parser.parse("--list2={}1<>2!!4({)");
 		assertTrue(parser.getIntegerList("list1").equals(parser.getIntegerList("list2")));
 	}
 
@@ -139,7 +145,7 @@ public class Task3_TDD_1 {
 	public void testRangeAndIndividualNumbers() {
 		List<Integer> expected = Arrays.asList(-2, -1, 0, 1, 2, 3);
 		parser.add("list", Parser.STRING);
-		parser.parse("--list=${0--2&&1#3-2"); // With different separators
+		parser.parse("--list=${0--2&&1#3-2   "); // With different separators
 		assertTrue(expected.equals(parser.getIntegerList("list")));
 	}
 
@@ -217,22 +223,30 @@ public class Task3_TDD_1 {
 	@Test
 	public void testInvalidInput5() {
 		parser.add("list", "l", Parser.STRING);
-		parser.parse("-l=\'4-7-9-12-15  \'");
+		parser.parse("-l=\'   4-7-9-12-15   \'");
+		System.out.println(parser.getIntegerList("l"));
 		assertTrue(parser.getIntegerList("l").isEmpty());
 	}
 	
 	@Test
 	public void testInvalidInput6() {
-		parser.add("list", Parser.STRING);
+		parser.add("list", "l", Parser.STRING);
 		parser.parse("-l=4----9");
 		assertTrue(parser.getIntegerList("list").isEmpty());
 	}
 	
 	@Test
 	public void testInvalidInput7() {
-		parser.add("o", Parser.STRING);
+		parser.add("list", Parser.STRING);
 		parser.parse("--list=-7{--5");
 		assertTrue(parser.getIntegerList("list").isEmpty());
+	}
+	
+	@Test
+	public void testInvalidInput8() {
+		parser.add("list", Parser.STRING);
+		parser.parse("--list=\'1,2-2,3,4-8\'");
+		assertTrue(parser.getIntegerList("list").isEmpty());		
 	}
 	
 	@Test
