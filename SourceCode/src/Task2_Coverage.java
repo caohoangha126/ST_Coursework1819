@@ -5,8 +5,8 @@ import st.OptionMap;
 import org.junit.Before;
 
 public class Task2_Coverage {
-private Parser parser;
-private OptionMap optionMap;
+	private Parser parser;	
+	private OptionMap optionMap;
 	
 	@Before
 	public void setUp() {
@@ -654,43 +654,54 @@ private OptionMap optionMap;
 	}
 	
 	/*
-	 * A boolean option doesn't need a value to be provided
+	 * Trivial test cases to cover all the branches left in parse() in Parser
 	 */
 	@Test
-	public void testParseWithBooleanTypeAndShortcut() {
+	public void testParse1() {
 		parser.add("val", "v", Parser.BOOLEAN);
 		parser.parse("-v");
 		assertEquals(true, parser.getBoolean("v"));
 	}
 	
-	/*
-	 * Test parse() with hasSpace == true 
-	 */
 	@Test
-	public void testParseWithHasSpaceEqualTrue() {
+	public void testParse2() {
 		parser.add("val", Parser.INTEGER);
 		int returnResult = parser.parse("--val -");
 		assertEquals(-3, returnResult);
 	}
 	
-	/*
-	 * Test parse() with hasSpace == true 
-	 * and char_index < length
-	 */
 	@Test
-	public void testParseWithHasSpaceEqualTrueWithCharIndexLessThanLength() {
+	public void testParse3() {
 		parser.add("val", Parser.BOOLEAN);
 		parser.parse("--val ");
 		assertEquals(true, parser.getBoolean("val"));
 	}	
-	
-	/*
-	 * Test parse() with char_index >= length
-	 */	
+
 	@Test
-	public void testParseWithCharIndexNoLessThanLength() {
+	public void testParse4() {
 		parser.add("val", Parser.BOOLEAN);
 		parser.parse("--val - ");
 		assertEquals(true, parser.getBoolean("val"));
 	}
+		
+	@Test 
+	public void testParse5() {
+		parser.add("val1", "v1", Parser.STRING);
+		parser.add("val2", "v2", Parser.STRING);
+		parser.parse("-v1=-v2");	
+		String[] expected = {"-v2", ""};
+		String[] actual = {parser.getString("v1"), parser.getString("v2")};
+		assertArrayEquals(expected, actual);
+	}	
+	
+	@Test
+	public void testParse6() {
+		parser.add("_abc", Parser.STRING);
+		parser.parse("--_abc");
+		assertEquals("", parser.getString("_abc"));
+	}
+	
+	/* 
+	 * Trivial test cases to cover all the branches left in OptionMap
+	 */
 } 

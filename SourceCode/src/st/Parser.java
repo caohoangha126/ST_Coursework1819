@@ -1,6 +1,10 @@
 package st;
 
 import java.math.BigInteger;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Parser {
 	public static final int INTEGER = 1;
@@ -205,5 +209,211 @@ public class Parser {
 		return optionMap.toString();
 	}
 
+	/*
+	 * Implementation of getIntegerList for Task 3
+	 */
+	public List<Integer> getIntegerList(String option) {
+		// Return empty list if option is of type Integer, Boolean, or Char
+		if (getType(option) != STRING) return Arrays.asList();	
+		
+		ArrayList<Integer> list = new ArrayList<Integer>();
+		String value = getString(option);			
+		int charIndex = 0;
+		int length = value.length();
+		boolean hasHyphen = false;
+		boolean potentialRange = false;
+		int oneEnd = 0;
+		boolean hasSeparator = false;
+		
+		while(charIndex < length) {
+			// Skip the separator(s)
+			while (!Character.isDigit(value.charAt(charIndex)) && value.charAt(charIndex) != '-') {
+				hasSeparator = true;
+				charIndex++;				
+				// If there is a potential range, but there is a bunch of separators in between
+				// that means there is no range
+				if (potentialRange) potentialRange = false;
+				if (charIndex == length) break;
+			}
+			
+			// If already hit the end of the string
+			if (charIndex == length) return Arrays.asList();		
+			
+			// If hit a hyphen
+			if (value.charAt(charIndex) == '-') {
+				hasHyphen = true;
+				charIndex++;
+				if (charIndex == length) return Arrays.asList();
+			} 
+			else if (Character.isDigit(value.charAt(charIndex))) { // If hit a number
+				String numString = Character.toString(value.charAt(charIndex));
+				charIndex++;
+				while (charIndex < length) {
+					// If the next char is also a number
+					// meaning the individual number has more than one digit
+					if (Character.isDigit(value.charAt(charIndex))) {
+						numString = numString + Character.toString(value.charAt(charIndex));
+						charIndex++;
+					} 
+					else break;
+				}
+				// Convert the string to a number and add it to the list 
+				list.add(Integer.valueOf(numString));
+				// It might be one end of a range
+				potentialRange = true;
+				oneEnd = Integer.valueOf(numString);	
+				// If hit the end of the string
+				if (charIndex == length) break;
+			} 
+			else break;
+			
+			// If actually hit a hyphen 
+			// If the char immediately after the hyphen is a number
+			if (hasHyphen && Character.isDigit(value.charAt(charIndex))) {
+				hasHyphen = false;
+				// If there is a range
+				if (potentialRange) {
+					String numString = Character.toString(value.charAt(charIndex));
+					charIndex++;
+					while (charIndex < length) {
+						// If the next char is also a number
+						// meaning the individual number has more than one digit
+						if (Character.isDigit(value.charAt(charIndex))) {
+							numString = numString + Character.toString(value.charAt(charIndex));
+							charIndex++;
+						} 
+						else break;
+					}
+					// Convert the string to a number  
+					int otherEnd = Integer.valueOf(numString); 
+					// If two ends are equal, invalid
+					if (otherEnd == oneEnd) return Arrays.asList();
+					int lowerBound;
+					int upperBound;
+					boolean lowerBoundAlreadyAdded = false; // false means upperbound number has been added
+					if (oneEnd < otherEnd) {
+						lowerBound = oneEnd;
+						lowerBoundAlreadyAdded = true;
+						upperBound = otherEnd;
+					} 
+					else {
+						lowerBound = otherEnd;
+						upperBound = oneEnd;
+					}
+					// Add all the numbers in range to list
+					// Except for one bound that has already been added
+					for (int i = lowerBound; i <= upperBound; i++) {
+						if (lowerBoundAlreadyAdded && i == lowerBound) continue;
+						if (!lowerBoundAlreadyAdded && i == upperBound) continue;
+						else list.add(i);
+					}
+					potentialRange = false;
+				}
+				else {
+					// If there isn't a range
+					// meaning the hyphen signifies negative value
+					String numString = Character.toString(value.charAt(charIndex));
+					charIndex++;
+					while (charIndex < length) {
+						// If the next char is also a number
+						// meaning the individual number has more than one digit
+						if (Character.isDigit(value.charAt(charIndex))) {
+							numString = numString + Character.toString(value.charAt(charIndex));
+							charIndex++;
+						} 
+						else break;
+					}
+					// Convert the string to a number and add it to the list 
+					list.add(-Integer.valueOf(numString));
+					// It might be one end of a range
+					potentialRange = true;
+					oneEnd = -Integer.valueOf(numString); 					
+					if (!hasSeparator && charIndex == length) return Arrays.asList();
+					hasSeparator = false;
+				}
+				// If hit the end of the string
+				if (charIndex == length) break;
+			}
+			// If the char immediately after hyphen is another hyphen
+			// meaning the second hyphen has to signify negative value
+			else if (hasHyphen && value.charAt(charIndex) == '-') {
+				hasHyphen = false;
+				charIndex++;
+				// If the char immediately after two hyphens isn't a number, invalid
+				if (!Character.isDigit(value.charAt(charIndex))) return Arrays.asList();
+				else { // If it's a number
+					// If there is a range
+					if (potentialRange) {
+						String numString = Character.toString(value.charAt(charIndex));
+						charIndex++;
+						while (charIndex < length) {
+							// If the next char is also a number
+							// meaning the individual number has more than one digit
+							if (Character.isDigit(value.charAt(charIndex))) {
+								numString = numString + Character.toString(value.charAt(charIndex));
+								charIndex++;
+							}
+							else break;
+						}
+						// Convert the string to a number  
+						int otherEnd = -Integer.valueOf(numString); 
+						// If two ends are equal, invalid
+						if (otherEnd == oneEnd) return Arrays.asList();
+						int lowerBound;
+						int upperBound;
+						boolean lowerBoundAlreadyAdded = false; // false means upperbound number has been added
+						if (oneEnd < otherEnd) {
+							lowerBound = oneEnd;
+							lowerBoundAlreadyAdded = true;
+							upperBound = otherEnd;
+						} 
+						else {
+							lowerBound = otherEnd;
+							upperBound = oneEnd;
+						}
+						
+						// Add all the numbers in range to list
+						// Except for one bound that has already been added
+						for (int i = lowerBound; i <= upperBound; i++) {
+							if (lowerBoundAlreadyAdded && i == lowerBound) continue;
+							if (!lowerBoundAlreadyAdded && i == upperBound) continue;
+							else list.add(i);
+						}
+						potentialRange = false;
+					}
+					else {
+						// If there isn't a range
+						// meaning the hyphen signifies negative value
+						String numString = Character.toString(value.charAt(charIndex));
+						charIndex++;
+						while (charIndex < length) {
+							// If the next char is also a number
+							// meaning the individual number has more than one digit
+							if (Character.isDigit(value.charAt(charIndex))) {
+								numString = numString + Character.toString(value.charAt(charIndex));
+								charIndex++;
+							}
+							else break;
+						}
+						if (charIndex == length) return Arrays.asList();
+						else { 
+							// Convert the string to a number and add it to the list 
+							list.add(-Integer.valueOf(numString));
+							// It might be one end of a range
+							potentialRange = true;
+							oneEnd = -Integer.valueOf(numString); 
+						}
+					}
+					// If hit the end of the string
+					if (charIndex == length) break;
+				}
+			}
+			else if (hasHyphen){ // IF after hyphen is anything other than a hyphen or a number, invalid
+				return Arrays.asList();				
+			}
+		}
+		Collections.sort(list);
+		return list;
+ 	}
 }
 
