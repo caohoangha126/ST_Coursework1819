@@ -238,7 +238,10 @@ public class Parser {
 			}
 			
 			// If already hit the end of the string
-			if (charIndex == length) return list;
+			if (charIndex == length) {
+				Collections.sort(list);
+				return list;
+			}
 			
 			// If hit a hyphen
 			if (value.charAt(charIndex) == '-') {
